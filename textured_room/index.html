@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Step 1 - Basic Setup</title>
+  <title>Step 3 - Textured Room</title>
   <style>
     body { margin: 0; overflow: hidden; }
   </style>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
 <script>
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x222222);
@@ -26,8 +27,63 @@
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.target.set(0, 1, 0);
+
+  // ===== Lampu =====
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+  const point   = new THREE.PointLight(0xffffff, 1.0, 100);
+  point.position.set(0, 2.4, 0);
+  scene.add(ambient, point);
+
+  // ===== Textures =====
+  const loader = new THREE.TextureLoader();
+  const floorTex   = loader.load('floor.jpg');
+  const wallTex    = loader.load('wall.jpg');
+  const ceilingTex = loader.load('ceiling.jpg');
+  floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
+  wallTex.wrapS = wallTex.wrapT = THREE.RepeatWrapping;
+  ceilingTex.wrapS = ceilingTex.wrapT = THREE.RepeatWrapping;
+  floorTex.repeat.set(2, 2);
+
+  const matFloor   = new THREE.MeshStandardMaterial({ map: floorTex });
+  const matWall    = new THREE.MeshStandardMaterial({ map: wallTex });
+  const matCeiling = new THREE.MeshStandardMaterial({ map: ceilingTex });
+
+  const W = 4, H = 3, D = 6;
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matFloor);
+  floor.rotation.x = -Math.PI/2;
+  scene.add(floor);
+
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matCeiling);
+  ceiling.rotation.x = Math.PI/2;
+  ceiling.position.y = H;
+  scene.add(ceiling);
+
+  const backWall = new THREE.Mesh(new THREE.PlaneGeometry(W, H), matWall);
+  backWall.position.set(0, H/2, -D/2);
+  scene.add(backWall);
+
+  const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(W, H), matWall);
+  frontWall.rotation.y = Math.PI;
+  frontWall.position.set(0, H/2, D/2);
+  scene.add(frontWall);
+
+  const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(D, H), matWall);
+  leftWall.rotation.y = -Math.PI/2;
+  leftWall.position.set(-W/2, H/2, 0);
+  scene.add(leftWall);
+
+  const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(D, H), matWall);
+  rightWall.rotation.y = Math.PI/2;
+  rightWall.position.set(W/2, H/2, 0);
+  scene.add(rightWall);
+
   function animate() {
     requestAnimationFrame(animate);
+    controls.update();
     renderer.render(scene, camera);
   }
   animate();
