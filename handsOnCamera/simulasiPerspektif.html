@@ -1,0 +1,53 @@
+<!DOCTYPE html> 
+<html lang="id"> 
+<head> 
+  <meta charset="utf-8" /> 
+  <title>Three.js + Import Map</title> 
+  <style>html,body{height:100%;margin:0}canvas{display:block}</style> 
+  <script type="importmap"> 
+  { 
+    "imports": { 
+      "three": "https://unpkg.com/three@0.165.0/build/three.module.js", 
+      "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/" 
+    } 
+6 
+ 
+ 
+  } 
+  </script> 
+</head> 
+<body> 
+  <script type="module"> 
+    import * as THREE from 'three'; 
+    import { OrbitControls } from 
+'three/addons/controls/OrbitControls.js'; 
+ 
+    const scene = new THREE.Scene(); 
+    const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 
+0.1, 100); 
+    camera.position.set(3, 3, 10); 
+ 
+    const renderer = new THREE.WebGLRenderer({ antialias:true }); 
+    renderer.setSize(innerWidth, innerHeight); 
+    document.body.appendChild(renderer.domElement); 
+ 
+    // Objek: tiga kubus dengan jarak berbeda 
+    for (let i=0; i<3; i++) { 
+    const box = new THREE.Mesh( 
+        new THREE.BoxGeometry(),
+        new THREE.MeshStandardMaterial({ color: 0x6699ff })
+    ); 
+    box.position.z = -i * 2; 
+    scene.add(box); 
+    } 
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5)); 
+    scene.add(new THREE.DirectionalLight(0xffffff, 1)); 
+ 
+    function animate() { 
+    requestAnimationFrame(animate); 
+    renderer.render(scene, camera); 
+    } 
+    animate(); 
+  </script> 
+</body> 
+</html> 
